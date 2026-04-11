@@ -55,7 +55,11 @@ function updateDisplay(seconds: number, mode: TimerMode) {
   
   timerTime.textContent = timeString;
   timerTimeInput.value = timeString;
-  document.title = `${timeString} - LockIn`;
+  if (timer.isRunning()) {
+    document.title = `LockIn - (${timeString})`;
+  } else {
+    document.title = 'LockIn - Focus in Style';
+  }
 
   const modeLabels: Record<TimerMode, string> = {
     work: 'Focus Session',
@@ -130,6 +134,9 @@ function updateControls() {
 
   startBtn.innerHTML = `<i data-lucide="${iconName}"></i>`;
   startLabel.textContent = label;
+  
+  // Update title immediately when status changes
+  updateDisplay(timer.getSecondsRemaining(), timer.getMode());
   
   // Re-run Lucide
   (window as any).lucide?.createIcons();
@@ -248,15 +255,7 @@ resetBtn.addEventListener('click', () => {
 
 skipBtn.addEventListener('click', () => {
   const currentMode = timer.getMode();
-  let nextMode: TimerMode = 'work';
-  
-  if (currentMode === 'work') {
-    nextMode = 'shortBreak';
-  } else if (currentMode === 'shortBreak') {
-    nextMode = 'longBreak';
-  } else {
-    nextMode = 'work';
-  }
+  const nextMode: TimerMode = currentMode === 'work' ? 'shortBreak' : 'work';
   
   switchMode(nextMode);
 });
