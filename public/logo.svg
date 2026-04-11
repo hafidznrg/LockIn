@@ -1,0 +1,41 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="15" />
+      <feOffset dx="0" dy="10" result="offsetblur" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <linearGradient id="sageGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:hsl(96, 14%, 60%);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:hsl(96, 14%, 45%);stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="glassLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:white;stop-opacity:0.4" />
+      <stop offset="50%" style="stop-color:white;stop-opacity:0" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer Shadow Circle -->
+  <circle cx="256" cy="256" r="220" fill="url(#sageGradient)" filter="url(#shadow)" />
+  
+  <!-- Glass Reflection Overlay -->
+  <circle cx="256" cy="256" r="220" fill="url(#glassLight)" />
+  
+  <!-- Lock Symbol (Stylized) -->
+  <g transform="translate(181, 150) scale(1.2)">
+    <!-- Lock Body -->
+    <rect x="0" y="55" width="125" height="100" rx="20" fill="white" fill-opacity="0.9" />
+    <!-- Lock Shackle -->
+    <path d="M25 55V40C25 18 42 0 62.5 0C83 0 100 18 100 40V55H80V40C80 30 72 22 62.5 22C53 22 45 30 45 40V55H25Z" fill="white" fill-opacity="0.7" />
+    <!-- Keyhole / Focus Dot -->
+    <circle cx="62.5" cy="105" r="12" fill="hsl(96, 14%, 30%)" fill-opacity="0.5" />
+  </g>
+  
+  <!-- Text Logo (Optional, but usually better in a separate asset. Let's keep it minimalist) -->
+</svg>

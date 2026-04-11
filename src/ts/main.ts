@@ -15,9 +15,16 @@ const resetBtn = document.getElementById('resetBtn') as HTMLButtonElement;
 const skipBtn = document.getElementById('skipBtn') as HTMLButtonElement;
 const taskInput = document.getElementById('taskInput') as HTMLInputElement;
 const currentSessionDurationDisplay = document.getElementById('currentSessionDuration') as HTMLDivElement;
-
 const soundToggle = document.getElementById('soundToggle') as HTMLButtonElement;
 const modeButtons = document.querySelectorAll('.mode-btn');
+
+// Modal Elements
+const customModal = document.getElementById('customModal') as HTMLDivElement;
+const modalTitle = document.getElementById('modalTitle') as HTMLHeadingElement;
+const modalMessage = document.getElementById('modalMessage') as HTMLParagraphElement;
+const modalConfirm = document.getElementById('modalConfirm') as HTMLButtonElement;
+const modalCancel = document.getElementById('modalCancel') as HTMLButtonElement;
+const modalClose = document.getElementById('modalClose') as HTMLButtonElement;
 
 // State
 const timer = new Timer();
@@ -112,9 +119,13 @@ function updateControls() {
   if (isRunning) {
     iconName = 'pause';
     label = 'Pause';
-  } else if (hasStarted) {
-    iconName = 'play';
-    label = 'Resume';
+    timerTimeInput.disabled = true;
+  } else {
+    timerTimeInput.disabled = false;
+    if (hasStarted) {
+      iconName = 'play';
+      label = 'Resume';
+    }
   }
 
   startBtn.innerHTML = `<i data-lucide="${iconName}"></i>`;
@@ -124,8 +135,38 @@ function updateControls() {
   (window as any).lucide?.createIcons();
 }
 
+// Modal Toggle
+function showModal(title: string, message: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    modalTitle.textContent = title;
+    modalMessage.textContent = message;
+    customModal.classList.add('active');
+
+    const cleanup = (result: boolean) => {
+      customModal.classList.remove('active');
+      modalConfirm.removeEventListener('click', onConfirm);
+      modalCancel.removeEventListener('click', onCancel);
+      modalClose.removeEventListener('click', onCancel);
+      resolve(result);
+    };
+
+    const onConfirm = () => cleanup(true);
+    const onCancel = () => cleanup(false);
+
+    modalConfirm.addEventListener('click', onConfirm);
+    modalCancel.addEventListener('click', onCancel);
+    modalClose.addEventListener('click', onCancel);
+  });
+}
+
 // Duration Validation & Update
-function handleManualDurationChange() {
+async function handleManualDurationChange() {
+  // If running, the input is disabled, but this is a safety check
+  if (timer.isRunning()) {
+    updateDisplay(timer.getSecondsRemaining(), timer.getMode());
+    return;
+  }
+
   const value = timerTimeInput.value;
   const parts = value.split(':');
   
@@ -148,10 +189,14 @@ function handleManualDurationChange() {
     return;
   }
 
-  // Double check if session is active
-  if (timer.isRunning()) {
-    const confirmChange = confirm("Do you want to adjust the duration for the current active session? This will restart the timer.");
-    if (!confirmChange) {
+  // If session has started (is paused), confirm reset
+  const hasStarted = timer.getSecondsRemaining() < timer.getTotalSeconds();
+  if (hasStarted) {
+    const confirmed = await showModal(
+      "Adjust Duration?",
+      "Do you want to adjust the duration for the current paused session? This will reset your progress."
+    );
+    if (!confirmed) {
       updateDisplay(timer.getSecondsRemaining(), timer.getMode());
       return;
     }

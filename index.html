@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LockIn - Focus in Style</title>
     <!-- Lucide Icons -->
@@ -15,6 +15,7 @@
     <div class="bg-overlay"></div>
     <div id="app">
       <header class="header">
+        <img src="/logo.svg" alt="LockIn Logo" class="brand-logo" />
         <h1 class="brand-title">LockIn</h1>
         <p class="brand-subtitle" id="timerMode">Focus Session</p>
       </header>
@@ -92,6 +93,25 @@
         <input type="number" id="shortDuration" value="5">
         <input type="number" id="longDuration" value="15">
         <button id="stopBtn"></button>
+      </div>
+    </div>
+
+    <!-- Custom Modal -->
+    <div id="customModal" class="modal-overlay">
+      <div class="modal-content floating-glass">
+        <div class="modal-header">
+          <h2 id="modalTitle">Adjust Duration?</h2>
+          <button class="modal-close" id="modalClose">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p id="modalMessage">Do you want to adjust the duration for the current session? This will reset your progress.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn secondary" id="modalCancel">Cancel</button>
+          <button class="modal-btn primary" id="modalConfirm">Confirm</button>
+        </div>
       </div>
     </div>
 
