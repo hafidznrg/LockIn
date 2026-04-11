@@ -1,0 +1,276 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap');
+
+:root {
+  --sage-primary: #829672;
+  --sage-light: #F2F3F1;
+  --sage-dark: #344C3D;
+  --sage-muted: #6B7A63;
+  --glass-bg: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  --white: #ffffff;
+  --transition-smooth: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(135deg, #F2F3F1 0%, #DCE2D7 50%, #BCC3B8 100%);
+  color: var(--sage-dark);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  transition: var(--transition-smooth);
+}
+
+body.break-short {
+  background: linear-gradient(135deg, #E6F0EE 0%, #CDE0DD 100%);
+}
+
+body.break-long {
+  background: linear-gradient(135deg, #E8EAF6 0%, #C5CAE9 100%);
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: -1rem;
+  animation: fadeIn 1s ease forwards;
+}
+
+.brand-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, var(--sage-dark) 0%, var(--sage-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  opacity: 0.9;
+}
+
+#app {
+  width: 100%;
+  max-width: 500px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  z-index: 1;
+}
+
+/* Glass Card */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 2rem;
+  padding: 2rem;
+  transition: var(--transition-smooth);
+}
+
+.glass-card:hover {
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Timer Container */
+.timer-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  width: 280px;
+}
+
+.timer-circle {
+  transform: rotate(-90deg);
+  width: 100%;
+  height: 100%;
+}
+
+.timer-circle circle {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.circle-bg {
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+.circle-progress {
+  stroke: var(--sage-primary);
+  stroke-dasharray: 848; /* 2 * PI * 135 */
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1s linear, stroke 0.4s ease;
+}
+
+.timer-display {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.timer-time {
+  font-size: 4rem;
+  font-weight: 600;
+  letter-spacing: -2px;
+  color: var(--sage-dark);
+}
+
+.timer-mode {
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 4px;
+  color: var(--sage-muted);
+  font-weight: 500;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.btn {
+  background: var(--white);
+  border: none;
+  color: var(--sage-dark);
+  padding: 1rem 1.5rem;
+  border-radius: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: var(--transition-smooth);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+  background: var(--sage-primary);
+  color: var(--white);
+}
+
+.btn-icon {
+  padding: 1rem;
+}
+
+/* Task Manager */
+.task-manager {
+  margin-top: 1rem;
+}
+
+.current-task-box {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.task-input {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid var(--glass-border);
+  color: var(--sage-dark);
+  font-size: 1.1rem;
+  padding: 0.5rem 0;
+  width: 100%;
+  outline: none;
+  transition: var(--transition-smooth);
+}
+
+.task-input:focus {
+  border-bottom-color: var(--sage-primary);
+}
+
+::placeholder {
+  color: var(--sage-muted);
+  opacity: 0.6;
+}
+
+/* Settings */
+.settings-section {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.setting-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  text-align: center;
+}
+
+.setting-label {
+  font-size: 0.75rem;
+  color: var(--sage-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.duration-input {
+  background: rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--glass-border);
+  border-radius: 0.5rem;
+  padding: 0.4rem;
+  color: var(--sage-dark);
+  font-family: inherit;
+  font-weight: 600;
+  text-align: center;
+  width: 100%;
+  outline: none;
+  transition: var(--transition-smooth);
+}
+
+.duration-input:focus {
+  border-color: var(--sage-primary);
+  background: var(--white);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#app > * {
+  animation: fadeIn 0.8s ease forwards;
+}
+
+/* Sound Toggle */
+.sound-toggle {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  padding: 0.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--sage-muted);
+}
