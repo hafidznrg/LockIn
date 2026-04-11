@@ -73,7 +73,7 @@ body {
   width: 100%;
   max-width: 420px;
   height: 100dvh;
-  padding: 1.5rem 2rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -84,7 +84,7 @@ body {
 /* Header */
 .header {
   text-align: center;
-  margin-top: 0.5rem;
+  margin-top: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -570,7 +570,7 @@ body.break-short .modal-content, body.break-long .modal-content {
 /* Responsive Height Fixes */
 @media (max-height: 750px) {
   #app {
-    padding: 0.8rem 1.5rem;
+    padding: 1.2rem;
   }
   
   .brand-logo {
@@ -588,11 +588,11 @@ body.break-short .modal-content, body.break-long .modal-content {
   }
   
   .timer-time {
-    font-size: 3.5rem;
+    font-size: 3.2rem;
   }
-  
+
   .timer-time-input {
-    font-size: 3.5rem;
+    font-size: 3.2rem;
   }
   
   .timer-section {
