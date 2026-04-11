@@ -3,12 +3,12 @@
   --focus-h: 96;
   --focus-s: 14%;
   --focus-l: 52%;
-  
+
   /* Mint (Short Break) */
   --short-h: 168;
   --short-s: 25%;
   --short-l: 55%;
-  
+
   /* Blue (Long Break) */
   --long-h: 225;
   --long-s: 35%;
@@ -22,15 +22,15 @@
   --primary: hsl(var(--h), var(--s), var(--l));
   --primary-light: hsl(var(--h), var(--s), calc(var(--l) + 15%));
   --primary-dark: hsl(var(--h), var(--s), calc(var(--l) - 20%));
-  
+
   --bg-color: hsl(var(--h), 20%, 95%);
   --text-color: hsl(var(--h), 30%, 20%);
   --text-muted: hsl(var(--h), 15%, 45%);
-  
+
   --glass-bg: hsla(0, 0%, 100%, 0.15);
   --glass-border: hsla(0, 0%, 100%, 0.3);
   --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
-  
+
   --transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   --glow: 0 0 20px hsla(var(--h), var(--s), var(--l), 0.5);
 }
@@ -65,8 +65,13 @@ body {
 }
 
 @keyframes pulseBg {
-  from { transform: scale(1); }
-  to { transform: scale(1.1) rotate(5deg); }
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.1) rotate(5deg);
+  }
 }
 
 #app {
@@ -77,7 +82,9 @@ body {
   padding: 1.5rem 1.5rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  /* Universal spacing to equalize all gaps */
+  justify-content: space-evenly;
+  align-items: center;
   position: relative;
   z-index: 1;
 }
@@ -134,15 +141,8 @@ body {
   transform: scale(1.1);
 }
 
-/* Timer Section */
-.timer-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-}
+/* Components are now direct children of #app and spaced by justify-content */
+
 
 .timer-container {
   position: relative;
@@ -183,7 +183,8 @@ body {
   stroke: var(--primary);
   stroke-width: 6;
   stroke-linecap: round;
-  stroke-dasharray: 848.23; /* 2 * PI * 135 */
+  stroke-dasharray: 848.23;
+  /* 2 * PI * 135 */
   stroke-dashoffset: 0;
   transition: stroke-dashoffset 1s linear, stroke var(--transition);
 }
@@ -231,7 +232,7 @@ body {
   color: var(--text-color);
 }
 
-.timer-time-input:focus + .timer-time {
+.timer-time-input:focus+.timer-time {
   opacity: 0;
 }
 
@@ -329,7 +330,7 @@ body {
   border: 1px solid var(--glass-border);
   padding: 0.4rem;
   border-radius: 1.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
 }
 
 .mode-btn {
@@ -422,25 +423,45 @@ body.break-long {
 
 /* Animations */
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-#app > * {
+#app>* {
   animation: slideUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
 }
 
-.header { animation-delay: 0.1s; }
-.timer-section { animation-delay: 0.2s; }
-.mode-tabs { animation-delay: 0.3s; }
-.task-manager { animation-delay: 0.4s; }
+.header {
+  animation-delay: 0.1s;
+}
+
+.timer-section {
+  animation-delay: 0.2s;
+}
+
+.mode-tabs {
+  animation-delay: 0.3s;
+}
+
+.task-manager {
+  animation-delay: 0.4s;
+}
 
 /* Modal Styles */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7); /* Darker backdrop */
-  backdrop-filter: blur(12px);    /* More blur */
+  background: rgba(0, 0, 0, 0.7);
+  /* Darker backdrop */
+  backdrop-filter: blur(12px);
+  /* More blur */
   -webkit-backdrop-filter: blur(12px);
   display: flex;
   justify-content: center;
@@ -459,18 +480,21 @@ body.break-long {
 .modal-content {
   width: 90%;
   max-width: 380px;
-  background: rgba(255, 255, 255, 0.95); /* High opacity for readability */
+  background: rgba(255, 255, 255, 0.95);
+  /* High opacity for readability */
   border-radius: 2rem;
   padding: 2rem;
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.5);
   transform: translateY(30px) scale(0.9);
   transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-  color: #1a1a1a; /* Explicit dark text for readability */
+  color: #1a1a1a;
+  /* Explicit dark text for readability */
 }
 
 /* Theme-aware modal text (if in break mode, it might need adjustment but 0.95 white is safe) */
-body.break-short .modal-content, body.break-long .modal-content {
+body.break-short .modal-content,
+body.break-long .modal-content {
   background: rgba(255, 255, 255, 0.98);
 }
 
@@ -511,7 +535,8 @@ body.break-short .modal-content, body.break-long .modal-content {
 .modal-body {
   margin-bottom: 2rem;
   line-height: 1.6;
-  color: #444; /* Darker text for readability */
+  color: #444;
+  /* Darker text for readability */
   font-size: 1.05rem;
 }
 
@@ -561,49 +586,48 @@ body.break-short .modal-content, body.break-long .modal-content {
 }
 
 /* Hint update for disabled state */
-.timer-time-wrapper:has(.timer-time-input:disabled) + .timer-hint {
+.timer-time-wrapper:has(.timer-time-input:disabled)+.timer-hint {
   opacity: 0;
   visibility: hidden;
 }
 
-.timer-time-input:disabled ~ .timer-time {
+.timer-time-input:disabled~.timer-time {
   opacity: 0.5;
 }
+
 /* Universal Height Coverage */
 @media (max-height: 850px) {
   #app {
     padding: 0.8rem 1rem calc(0.8rem + env(safe-area-inset-bottom, 0px));
   }
-  
+
   .brand-logo {
     width: clamp(28px, 7vh, 56px);
     height: clamp(28px, 7vh, 56px);
     margin-bottom: 0.1rem;
   }
-  
+
   .brand-title {
     font-size: clamp(1.2rem, 3.5vh, 2rem);
   }
-  
+
   .brand-subtitle {
     font-size: 0.7rem;
     letter-spacing: 2px;
   }
-  
-  .timer-section {
-    gap: clamp(0.4rem, 1.2vh, 1rem);
-  }
-  
+
+  /* Universal spacing is handled by justify-content: space-evenly on #app */
+
   .btn-round {
     width: clamp(44px, 7vh, 60px);
     height: clamp(44px, 7vh, 60px);
   }
-  
+
   .glass-btn i {
     width: clamp(18px, 3.5vh, 26px);
     height: clamp(18px, 3.5vh, 26px);
   }
-  
+
   .floating-glass {
     padding: 0.5rem 1rem;
     max-width: 280px;
@@ -619,10 +643,10 @@ body.break-short .modal-content, body.break-long .modal-content {
   }
 
   .mode-tabs {
-    margin-bottom: 0.3rem;
+    margin-bottom: 0px;
     padding: 0.25rem;
   }
-  
+
   .mode-btn {
     padding: 0.4rem 0.6rem;
     font-size: 0.75rem;
@@ -637,12 +661,12 @@ body.break-short .modal-content, body.break-long .modal-content {
   .header {
     margin-top: 0;
   }
-  
+
   .brand-logo {
     width: 24px;
     height: 24px;
   }
-  
+
   .brand-title {
     font-size: 1.1rem;
   }
@@ -650,11 +674,11 @@ body.break-short .modal-content, body.break-long .modal-content {
   .brand-subtitle {
     display: none;
   }
-  
+
   .timer-section {
     gap: 0.3rem;
   }
-  
+
   .timer-container {
     width: clamp(170px, 42vh, 200px);
     height: clamp(170px, 42vh, 200px);

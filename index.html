@@ -24,61 +24,60 @@
         <i data-lucide="volume-2"></i>
       </button>
 
-      <section class="timer-section">
-        <div class="timer-container glass-circle">
-          <svg class="timer-circle-svg" viewBox="0 0 300 300">
-            <defs>
-              <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="5" result="blur" />
-                <feComposite in="SourceGraphic" in2="blur" operator="over" />
-              </filter>
-            </defs>
-            <circle class="circle-bg" cx="150" cy="150" r="135"></circle>
-            <circle class="circle-progress" id="progressCircle" cx="150" cy="150" r="135" filter="url(#glow)"></circle>
-          </svg>
-          <div class="timer-display">
-            <div class="timer-time-wrapper">
-              <input type="text" id="timerTimeInput" class="timer-time-input" value="25:00" spellcheck="false">
-              <div class="timer-time" id="timerTime">25:00</div>
-            </div>
-            <div class="timer-hint">Click to adjust</div>
-            <div class="timer-sessions" id="currentSessionDuration">25m</div>
+      <!-- Direct children for universal spacing -->
+      <div class="timer-container glass-circle">
+        <svg class="timer-circle-svg" viewBox="0 0 300 300">
+          <defs>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="5" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+          <circle class="circle-bg" cx="150" cy="150" r="135"></circle>
+          <circle class="circle-progress" id="progressCircle" cx="150" cy="150" r="135" filter="url(#glow)"></circle>
+        </svg>
+        <div class="timer-display">
+          <div class="timer-time-wrapper">
+            <input type="text" id="timerTimeInput" class="timer-time-input" value="25:00" spellcheck="false">
+            <div class="timer-time" id="timerTime">25:00</div>
           </div>
+          <div class="timer-hint">Click to adjust</div>
+          <div class="timer-sessions" id="currentSessionDuration">25m</div>
         </div>
+      </div>
 
-        <section class="task-manager floating-glass">
-          <div class="task-box">
-            <label for="taskInput" class="task-label">Currently locking in on...</label>
-            <div class="task-input-wrapper">
-              <input type="text" id="taskInput" class="task-input" placeholder="Write your focus here..." maxlength="50">
-              <i data-lucide="edit-3" class="task-icon"></i>
-            </div>
-          </div>
-        </section>
-
-        <div class="main-controls">
-          <div class="control-group">
-            <button class="glass-btn btn-round" id="startBtn" title="Start/Pause">
-              <i data-lucide="play" id="startIcon"></i>
-            </button>
-            <span class="control-label" id="startLabel">Start</span>
-          </div>
-          
-          <div class="control-group">
-            <button class="glass-btn btn-round" id="resetBtn" title="Reset">
-              <i data-lucide="rotate-ccw"></i>
-            </button>
-            <span class="control-label">Reset</span>
-          </div>
-
-          <div class="control-group">
-            <button class="glass-btn btn-round" id="skipBtn" title="Skip">
-              <i data-lucide="skip-forward"></i>
-            </button>
-            <span class="control-label">Skip</span>
+      <section class="task-manager floating-glass">
+        <div class="task-box">
+          <label for="taskInput" class="task-label">Currently locking in on...</label>
+          <div class="task-input-wrapper">
+            <input type="text" id="taskInput" class="task-input" placeholder="Write your focus here..." maxlength="50">
+            <i data-lucide="edit-3" class="task-icon"></i>
           </div>
         </div>
       </section>
+
+      <div class="main-controls">
+        <div class="control-group">
+          <button class="glass-btn btn-round" id="startBtn" title="Start/Pause">
+            <i data-lucide="play" id="startIcon"></i>
+          </button>
+          <span class="control-label" id="startLabel">Start</span>
+        </div>
+        
+        <div class="control-group">
+          <button class="glass-btn btn-round" id="resetBtn" title="Reset">
+            <i data-lucide="rotate-ccw"></i>
+          </button>
+          <span class="control-label">Reset</span>
+        </div>
+
+        <div class="control-group">
+          <button class="glass-btn btn-round" id="skipBtn" title="Skip">
+            <i data-lucide="skip-forward"></i>
+          </button>
+          <span class="control-label">Skip</span>
+        </div>
+      </div>
 
       <div class="mode-tabs">
         <button class="mode-btn active" data-mode="work">Focus</button>
