@@ -67,6 +67,10 @@ export class Timer {
     return this.mode;
   }
 
+  public getConfig(): TimerConfig {
+    return this.config;
+  }
+
   public getSecondsRemaining(): number {
     return this.secondsRemaining;
   }

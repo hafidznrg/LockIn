@@ -5,38 +5,39 @@ import { TaskManager } from './taskManager';
 
 // Elements
 const timerTime = document.getElementById('timerTime') as HTMLDivElement;
+const timerTimeInput = document.getElementById('timerTimeInput') as HTMLInputElement;
 const timerMode = document.getElementById('timerMode') as HTMLDivElement;
 const progressCircle = document.getElementById('progressCircle') as unknown as SVGCircleElement;
+
 const startBtn = document.getElementById('startBtn') as HTMLButtonElement;
-const startIcon = document.getElementById('startIcon') as HTMLElement;
-const startText = document.getElementById('startText') as HTMLSpanElement;
-const stopBtn = document.getElementById('stopBtn') as HTMLButtonElement;
+const startLabel = document.getElementById('startLabel') as HTMLSpanElement;
 const resetBtn = document.getElementById('resetBtn') as HTMLButtonElement;
 const skipBtn = document.getElementById('skipBtn') as HTMLButtonElement;
 const taskInput = document.getElementById('taskInput') as HTMLInputElement;
-
-const workDurationInput = document.getElementById('workDuration') as HTMLInputElement;
-const shortDurationInput = document.getElementById('shortDuration') as HTMLInputElement;
-const longDurationInput = document.getElementById('longDuration') as HTMLInputElement;
+const currentSessionDurationDisplay = document.getElementById('currentSessionDuration') as HTMLDivElement;
 
 const soundToggle = document.getElementById('soundToggle') as HTMLButtonElement;
-const modeButtons = document.querySelectorAll('.mode-tabs .btn');
+const modeButtons = document.querySelectorAll('.mode-btn');
 
 // State
 const timer = new Timer();
 const taskManager = new TaskManager();
 let isSoundEnabled = true;
 
-// Audio (Gentle chime)
+// Audio
 const chime = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
 
 // Initialize
 function init() {
   taskInput.value = taskManager.getTask();
   updateDisplay(timer.getSecondsRemaining(), timer.getMode());
-  updateProgress(1); // Full circle at start
+  updateProgress(1);
   updateControls();
   setActiveTab(timer.getMode());
+  updateSessionDurationDisplay();
+  
+  // Update theme based on initial mode
+  updateTheme(timer.getMode());
 }
 
 // UI Updates
@@ -44,18 +45,17 @@ function updateDisplay(seconds: number, mode: TimerMode) {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   const timeString = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  
   timerTime.textContent = timeString;
+  timerTimeInput.value = timeString;
   document.title = `${timeString} - LockIn`;
 
   const modeLabels: Record<TimerMode, string> = {
-    work: 'Focus',
+    work: 'Focus Session',
     shortBreak: 'Short Break',
     longBreak: 'Long Break'
   };
   timerMode.textContent = modeLabels[mode];
-
-  // Update Body class for theme
-  document.body.className = mode === 'work' ? '' : `break-${mode === 'shortBreak' ? 'short' : 'long'}`;
 }
 
 function updateProgress(ratio: number) {
@@ -65,14 +65,30 @@ function updateProgress(ratio: number) {
   progressCircle.style.strokeDashoffset = offset.toString();
 }
 
+function updateTheme(mode: TimerMode) {
+  document.body.className = mode === 'work' ? '' : `break-${mode === 'shortBreak' ? 'short' : 'long'}`;
+}
+
+function updateSessionDurationDisplay() {
+  const config = timer.getConfig();
+  const mode = timer.getMode();
+  const seconds = config[mode];
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  
+  if (secs === 0) {
+    currentSessionDurationDisplay.textContent = `(${mins}m)`;
+  } else {
+    currentSessionDurationDisplay.textContent = `(${mins}:${secs.toString().padStart(2, '0')})`;
+  }
+}
+
 function setActiveTab(mode: TimerMode) {
   modeButtons.forEach(btn => {
     if (btn.getAttribute('data-mode') === mode) {
-      btn.classList.add('btn-primary');
-      btn.classList.remove('btn-secondary');
+      btn.classList.add('active');
     } else {
-      btn.classList.remove('btn-primary');
-      btn.classList.add('btn-secondary');
+      btn.classList.remove('active');
     }
   });
 }
@@ -82,6 +98,8 @@ function switchMode(mode: TimerMode) {
   updateProgress(1);
   updateControls();
   setActiveTab(mode);
+  updateTheme(mode);
+  updateSessionDurationDisplay();
 }
 
 function updateControls() {
@@ -89,37 +107,64 @@ function updateControls() {
   const hasStarted = timer.getSecondsRemaining() < timer.getTotalSeconds();
   
   let iconName = 'play';
-  let text = 'Start';
+  let label = 'Start';
 
   if (isRunning) {
     iconName = 'pause';
-    text = 'Pause';
+    label = 'Pause';
   } else if (hasStarted) {
     iconName = 'play';
-    text = 'Resume';
+    label = 'Resume';
   }
 
-  // Recreate the icon element to ensure Lucide picks up the change
-  startBtn.innerHTML = `<i data-lucide="${iconName}" id="startIcon"></i> <span id="startText">${text}</span>`;
+  startBtn.innerHTML = `<i data-lucide="${iconName}"></i>`;
+  startLabel.textContent = label;
   
-  // Re-run Lucide for the icon change
+  // Re-run Lucide
   (window as any).lucide?.createIcons();
 }
 
-function handleDurationChange() {
-  const work = parseInt(workDurationInput.value) * 60;
-  const short = parseInt(shortDurationInput.value) * 60;
-  const long = parseInt(longDurationInput.value) * 60;
+// Duration Validation & Update
+function handleManualDurationChange() {
+  const value = timerTimeInput.value;
+  const parts = value.split(':');
   
-  if (isNaN(work) || isNaN(short) || isNaN(long)) return;
+  let totalSeconds = 0;
+  if (parts.length === 2) {
+    const mins = parseInt(parts[0]);
+    const secs = parseInt(parts[1]);
+    if (!isNaN(mins) && !isNaN(secs)) {
+      totalSeconds = mins * 60 + secs;
+    }
+  } else {
+    const mins = parseInt(value);
+    if (!isNaN(mins)) {
+      totalSeconds = mins * 60;
+    }
+  }
+
+  if (totalSeconds <= 0 || totalSeconds > 3600) {
+    updateDisplay(timer.getSecondsRemaining(), timer.getMode());
+    return;
+  }
+
+  // Double check if session is active
+  if (timer.isRunning()) {
+    const confirmChange = confirm("Do you want to adjust the duration for the current active session? This will restart the timer.");
+    if (!confirmChange) {
+      updateDisplay(timer.getSecondsRemaining(), timer.getMode());
+      return;
+    }
+  }
+
+  const mode = timer.getMode();
+  const configUpdate: any = {};
+  configUpdate[mode] = totalSeconds;
   
-  timer.updateConfig({
-    work,
-    shortBreak: short,
-    longBreak: long
-  });
-  
-  updateProgress(timer.getSecondsRemaining() / timer.getTotalSeconds());
+  timer.updateConfig(configUpdate);
+  updateDisplay(timer.getSecondsRemaining(), mode);
+  updateProgress(1);
+  updateSessionDurationDisplay();
 }
 
 // Events
@@ -134,14 +179,11 @@ timer.onFinish = (mode) => {
     chime.play().catch(() => {});
   }
   
-  // Simple auto-next logic
   if (mode === 'work') {
     switchMode('shortBreak');
   } else {
     switchMode('work');
   }
-  
-  alert(`Time's up! Transitioning to ${timer.getMode()} mode.`);
 };
 
 startBtn.addEventListener('click', () => {
@@ -150,13 +192,6 @@ startBtn.addEventListener('click', () => {
   } else {
     timer.start();
   }
-  updateControls();
-});
-
-stopBtn.addEventListener('click', () => {
-  timer.stop();
-  timer.reset();
-  updateProgress(1);
   updateControls();
 });
 
@@ -181,8 +216,14 @@ skipBtn.addEventListener('click', () => {
   switchMode(nextMode);
 });
 
-[workDurationInput, shortDurationInput, longDurationInput].forEach(input => {
-  input.addEventListener('change', handleDurationChange);
+timerTimeInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    timerTimeInput.blur();
+  }
+});
+
+timerTimeInput.addEventListener('blur', () => {
+  handleManualDurationChange();
 });
 
 taskInput.addEventListener('input', () => {
