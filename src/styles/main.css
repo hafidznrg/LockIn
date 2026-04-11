@@ -72,8 +72,8 @@ body {
 #app {
   width: 100%;
   max-width: 420px;
-  height: 90vh;
-  padding: 2rem;
+  height: 100dvh;
+  padding: 1.5rem 2rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -84,7 +84,7 @@ body {
 /* Header */
 .header {
   text-align: center;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -140,7 +140,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2.5rem;
+  gap: 1.5rem;
 }
 
 .timer-container {
@@ -253,7 +253,7 @@ body {
 /* Controls */
 .main-controls {
   display: flex;
-  gap: 2.5rem;
+  gap: 2rem;
 }
 
 .control-group {
@@ -327,7 +327,7 @@ body {
   border: 1px solid var(--glass-border);
   padding: 0.4rem;
   border-radius: 1.5rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .mode-btn {
@@ -566,4 +566,99 @@ body.break-short .modal-content, body.break-long .modal-content {
 
 .timer-time-input:disabled ~ .timer-time {
   opacity: 0.5;
+}
+/* Responsive Height Fixes */
+@media (max-height: 750px) {
+  #app {
+    padding: 0.8rem 1.5rem;
+  }
+  
+  .brand-logo {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .brand-title {
+    font-size: 1.8rem;
+  }
+  
+  .timer-container {
+    width: 250px;
+    height: 250px;
+  }
+  
+  .timer-time {
+    font-size: 3.5rem;
+  }
+  
+  .timer-time-input {
+    font-size: 3.5rem;
+  }
+  
+  .timer-section {
+    gap: 0.8rem;
+  }
+  
+  .btn-round {
+    width: 55px;
+    height: 55px;
+  }
+  
+  .glass-btn i {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .floating-glass {
+    padding: 0.7rem 1.2rem;
+    max-width: 300px;
+  }
+
+  .mode-tabs {
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (max-height: 600px) {
+  .header {
+    margin-top: 0;
+  }
+  
+  .brand-logo {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 0.2rem;
+  }
+  
+  .brand-title {
+    font-size: 1.4rem;
+  }
+  
+  .brand-subtitle {
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+  }
+  
+  .timer-container {
+    width: 180px;
+    height: 180px;
+  }
+  
+  .timer-time {
+    font-size: 2.5rem;
+  }
+  
+  .timer-time-input {
+    font-size: 2.5rem;
+  }
+  
+  .mode-tabs {
+    margin-bottom: 0.5rem;
+    padding: 0.3rem;
+  }
+  
+  .mode-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+  }
 }
