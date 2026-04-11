@@ -73,7 +73,8 @@ body {
   width: 100%;
   max-width: 420px;
   height: 100dvh;
-  padding: 1.5rem;
+  /* Balanced padding with safe-area support */
+  padding: 1.5rem 1.5rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -145,8 +146,9 @@ body {
 
 .timer-container {
   position: relative;
-  width: 300px;
-  height: 300px;
+  /* Fluid scaling based on viewport height */
+  width: clamp(220px, 40vh, 300px);
+  height: clamp(220px, 40vh, 300px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -199,7 +201,7 @@ body {
 }
 
 .timer-time {
-  font-size: 4.5rem;
+  font-size: clamp(3rem, 10vh, 4.5rem);
   font-weight: 600;
   letter-spacing: -2px;
   color: var(--text-color);
@@ -214,7 +216,7 @@ body {
   color: transparent;
   caret-color: var(--primary);
   font-family: inherit;
-  font-size: 4.5rem;
+  font-size: clamp(3rem, 10vh, 4.5rem);
   font-weight: 600;
   letter-spacing: -2px;
   text-align: center;
@@ -567,55 +569,54 @@ body.break-short .modal-content, body.break-long .modal-content {
 .timer-time-input:disabled ~ .timer-time {
   opacity: 0.5;
 }
-/* Responsive Height Fixes */
-@media (max-height: 750px) {
+/* Universal Height Coverage */
+@media (max-height: 850px) {
   #app {
-    padding: 1.2rem;
+    padding: 1rem 1.2rem calc(1rem + env(safe-area-inset-bottom, 0px));
   }
   
   .brand-logo {
-    width: 48px;
-    height: 48px;
+    width: clamp(32px, 8vh, 64px);
+    height: clamp(32px, 8vh, 64px);
+    margin-bottom: 0.2rem;
   }
   
   .brand-title {
-    font-size: 1.8rem;
+    font-size: clamp(1.4rem, 4vh, 2.2rem);
   }
   
-  .timer-container {
-    width: 250px;
-    height: 250px;
-  }
-  
-  .timer-time {
-    font-size: 3.2rem;
-  }
-
-  .timer-time-input {
-    font-size: 3.2rem;
+  .brand-subtitle {
+    font-size: 0.75rem;
+    letter-spacing: 2px;
   }
   
   .timer-section {
-    gap: 0.8rem;
+    gap: clamp(0.5rem, 2vh, 1.5rem);
   }
   
   .btn-round {
-    width: 55px;
-    height: 55px;
+    width: clamp(50px, 8vh, 65px);
+    height: clamp(50px, 8vh, 65px);
   }
   
   .glass-btn i {
-    width: 24px;
-    height: 24px;
+    width: clamp(20px, 4vh, 28px);
+    height: clamp(20px, 4vh, 28px);
   }
   
   .floating-glass {
-    padding: 0.7rem 1.2rem;
+    padding: 0.6rem 1rem;
     max-width: 300px;
   }
 
   .mode-tabs {
     margin-bottom: 0.5rem;
+    padding: 0.3rem;
+  }
+  
+  .mode-btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem;
   }
 }
 
@@ -627,38 +628,14 @@ body.break-short .modal-content, body.break-long .modal-content {
   .brand-logo {
     width: 32px;
     height: 32px;
-    margin-bottom: 0.2rem;
   }
   
-  .brand-title {
-    font-size: 1.4rem;
-  }
-  
-  .brand-subtitle {
-    font-size: 0.7rem;
-    letter-spacing: 2px;
+  .timer-section {
+    gap: 0.4rem;
   }
   
   .timer-container {
-    width: 180px;
-    height: 180px;
-  }
-  
-  .timer-time {
-    font-size: 2.5rem;
-  }
-  
-  .timer-time-input {
-    font-size: 2.5rem;
-  }
-  
-  .mode-tabs {
-    margin-bottom: 0.5rem;
-    padding: 0.3rem;
-  }
-  
-  .mode-btn {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.75rem;
+    width: clamp(180px, 45vh, 220px);
+    height: clamp(180px, 45vh, 220px);
   }
 }
