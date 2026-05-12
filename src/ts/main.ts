@@ -16,6 +16,7 @@ const skipBtn = document.getElementById('skipBtn') as HTMLButtonElement;
 const taskInput = document.getElementById('taskInput') as HTMLInputElement;
 const currentSessionDurationDisplay = document.getElementById('currentSessionDuration') as HTMLDivElement;
 const soundToggle = document.getElementById('soundToggle') as HTMLButtonElement;
+const notificationToggle = document.getElementById('notificationToggle') as HTMLButtonElement;
 const modeButtons = document.querySelectorAll('.mode-btn');
 
 // Modal Elements
@@ -30,9 +31,124 @@ const modalClose = document.getElementById('modalClose') as HTMLButtonElement;
 const timer = new Timer();
 const taskManager = new TaskManager();
 let isSoundEnabled = true;
+let isNotificationEnabled = 'Notification' in window && Notification.permission === 'granted';
 
-// Audio
-const chime = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+function updateNotificationButton() {
+  if (!notificationToggle) return;
+  const iconName = isNotificationEnabled ? 'bell' : 'bell-off';
+  notificationToggle.innerHTML = `<i data-lucide="${iconName}"></i>`;
+  (window as any).lucide?.createIcons();
+}
+
+function sendNotification(title: string, body: string) {
+  if (!isNotificationEnabled) return;
+  try {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification(title, {
+        body,
+        icon: '/logo.svg'
+      });
+    }
+  } catch (err) {
+    console.error('Failed to send notification:', err);
+  }
+}
+
+// Audio state and context
+let audioCtx: AudioContext | null = null;
+const chime = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3');
+
+function initAudioContext() {
+  if (!audioCtx) {
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (AudioContextClass) {
+      audioCtx = new AudioContextClass();
+    }
+  }
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume().catch((err) => console.error('Failed to resume AudioContext:', err));
+  }
+}
+
+// Function to play a beautifully synthesized bell chime using Web Audio API (highly reliable, offline, bypasses CORS/autoplay blocks)
+function playSynthesizedChime() {
+  try {
+    initAudioContext();
+    if (!audioCtx) return;
+
+    const now = audioCtx.currentTime;
+    
+    // An upbeat, cheerful ascending major-pentatonic melody:
+    // C5 (523.25), E5 (659.25), G5 (783.99), C6 (1046.50), G5 (783.99), C6 (1046.50), E6 (1318.51)
+    const melody = [
+      { freq: 523.25, time: 0.0, volume: 0.15, decay: 0.6 },
+      { freq: 659.25, time: 0.12, volume: 0.15, decay: 0.6 },
+      { freq: 783.99, time: 0.24, volume: 0.15, decay: 0.6 },
+      { freq: 1046.50, time: 0.36, volume: 0.2, decay: 0.8 },
+      { freq: 783.99, time: 0.50, volume: 0.15, decay: 0.6 },
+      { freq: 1046.50, time: 0.62, volume: 0.2, decay: 0.8 },
+      { freq: 1318.51, time: 0.74, volume: 0.25, decay: 2.2 } // Long triumphant final bell
+    ];
+    
+    melody.forEach((note) => {
+      if (!audioCtx) return;
+      
+      const playAt = now + note.time;
+      
+      // 1. Fundamental frequency oscillator
+      const osc1 = audioCtx.createOscillator();
+      const gain1 = audioCtx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(note.freq, playAt);
+      
+      // Envelope for Fundamental
+      gain1.gain.setValueAtTime(0, playAt);
+      gain1.gain.linearRampToValueAtTime(note.volume, playAt + 0.01);
+      gain1.gain.exponentialRampToValueAtTime(0.0001, playAt + note.decay);
+      
+      osc1.connect(gain1);
+      gain1.connect(audioCtx.destination);
+      
+      osc1.start(playAt);
+      osc1.stop(playAt + note.decay);
+
+      // 2. Harmonic frequency oscillator (Octave higher, subtle metallic chime texture)
+      const osc2 = audioCtx.createOscillator();
+      const gain2 = audioCtx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(note.freq * 2, playAt);
+      
+      // Envelope for Harmonic (decays faster and is quieter)
+      gain2.gain.setValueAtTime(0, playAt);
+      gain2.gain.linearRampToValueAtTime(note.volume * 0.25, playAt + 0.01);
+      gain2.gain.exponentialRampToValueAtTime(0.0001, playAt + (note.decay * 0.6));
+      
+      osc2.connect(gain2);
+      gain2.connect(audioCtx.destination);
+      
+      osc2.start(playAt);
+      osc2.stop(playAt + (note.decay * 0.6));
+    });
+  } catch (error) {
+    console.error('Failed to play synthesized chime:', error);
+  }
+}
+
+// Play the chime (remote MP3 with synthesized fallback)
+function playChime() {
+  if (!isSoundEnabled) return;
+  
+  initAudioContext();
+  
+  chime.play()
+    .then(() => {
+      console.log('Chime played successfully via MP3 URL');
+    })
+    .catch((error) => {
+      console.warn('MP3 playback blocked or failed. Falling back to synthesized Web Audio chime.', error);
+      playSynthesizedChime();
+    });
+}
 
 // Initialize
 function init() {
@@ -45,6 +161,12 @@ function init() {
   
   // Update theme based on initial mode
   updateTheme(timer.getMode());
+
+  // Update notification toggle visual state
+  updateNotificationButton();
+
+  // Preload chime audio
+  chime.load();
 }
 
 // UI Updates
@@ -228,7 +350,17 @@ timer.onTick = (seconds, mode) => {
 
 timer.onFinish = (mode) => {
   if (isSoundEnabled) {
-    chime.play().catch(() => {});
+    playChime();
+  }
+  
+  if (isNotificationEnabled) {
+    if (mode === 'work') {
+      sendNotification("Focus Session Finished! 🌟", "Time to take a beautiful short break. You earned it!");
+    } else if (mode === 'shortBreak') {
+      sendNotification("Break Over! 🚀", "Time to lock in and get back to focus.");
+    } else if (mode === 'longBreak') {
+      sendNotification("Long Break Over! ☕", "Let's lock in for another focus session.");
+    }
   }
   
   if (mode === 'work') {
@@ -239,6 +371,7 @@ timer.onFinish = (mode) => {
 };
 
 startBtn.addEventListener('click', () => {
+  initAudioContext();
   if (timer.isRunning()) {
     timer.stop();
   } else {
@@ -248,12 +381,14 @@ startBtn.addEventListener('click', () => {
 });
 
 resetBtn.addEventListener('click', () => {
+  initAudioContext();
   timer.reset();
   updateProgress(1);
   updateControls();
 });
 
 skipBtn.addEventListener('click', () => {
+  initAudioContext();
   const currentMode = timer.getMode();
   const nextMode: TimerMode = currentMode === 'work' ? 'shortBreak' : 'work';
   
@@ -275,14 +410,62 @@ taskInput.addEventListener('input', () => {
 });
 
 soundToggle.addEventListener('click', () => {
+  initAudioContext();
   isSoundEnabled = !isSoundEnabled;
   const iconName = isSoundEnabled ? 'volume-2' : 'volume-x';
   soundToggle.innerHTML = `<i data-lucide="${iconName}"></i>`;
   (window as any).lucide?.createIcons();
+  
+  // Play preview chime when sound is turned back on to confirm it works & unlock audio context
+  if (isSoundEnabled) {
+    playChime();
+  }
+});
+
+notificationToggle.addEventListener('click', async () => {
+  initAudioContext(); // Multi-gesture unlock for completeness
+  
+  if (!('Notification' in window)) {
+    showModal(
+      "Unsupported Browser",
+      "We're sorry, but desktop notifications are not supported by your current browser. Please try Chrome, Safari, Firefox, or Edge."
+    );
+    return;
+  }
+
+  if (Notification.permission === 'denied') {
+    showModal(
+      "Notifications Blocked",
+      "It looks like notifications are blocked. Please enable notifications in your browser's site settings to receive alerts when your sessions end."
+    );
+    return;
+  }
+
+  if (Notification.permission === 'default') {
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+      isNotificationEnabled = true;
+      updateNotificationButton();
+      sendNotification("LockIn - Notifications Active! 🔔", "We will notify you here when your sessions finish.");
+    } else {
+      isNotificationEnabled = false;
+      updateNotificationButton();
+    }
+    return;
+  }
+
+  if (Notification.permission === 'granted') {
+    isNotificationEnabled = !isNotificationEnabled;
+    updateNotificationButton();
+    if (isNotificationEnabled) {
+      sendNotification("LockIn - Notifications Enabled! 🔔", "You will now receive alerts when your sessions end.");
+    }
+  }
 });
 
 modeButtons.forEach(btn => {
   btn.addEventListener('click', () => {
+    initAudioContext();
     const mode = btn.getAttribute('data-mode') as TimerMode;
     switchMode(mode);
   });
