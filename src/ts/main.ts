@@ -638,24 +638,4 @@ if (todoList) {
   });
 }
 
-// Scroll Indicator for Mobile
-const mobileScrollIndicator = document.getElementById('mobileScrollIndicator') as HTMLDivElement;
-const todoSection = document.querySelector('.todo-section') as HTMLElement;
-
-if (mobileScrollIndicator && todoSection) {
-  // Smooth scroll to tasks on click
-  mobileScrollIndicator.addEventListener('click', () => {
-    todoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-
-  // Fade out indicator when user starts scrolling down
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 40) {
-      mobileScrollIndicator.classList.add('hidden');
-    } else {
-      mobileScrollIndicator.classList.remove('hidden');
-    }
-  });
-}
-
 init();

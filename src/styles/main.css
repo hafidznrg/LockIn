@@ -1041,70 +1041,109 @@ body.break-long .modal-content {
   }
 }
 
-/* Scroll Indicator for Mobile */
-.scroll-indicator {
-  position: fixed;
-  bottom: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: hsla(var(--h), var(--s), var(--l), 0.22);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  padding: 0.55rem 1.1rem;
-  border-radius: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), var(--glow);
-  color: var(--text-color);
-  font-weight: 600;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
-              visibility 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
-              transform 0.3s ease, 
-              background-color var(--transition),
-              box-shadow var(--transition);
-  animation: indicatorBounce 2s infinite ease-in-out;
-}
-
-.scroll-indicator:hover {
-  background: hsla(var(--h), var(--s), var(--l), 0.35);
-  transform: translateX(-50%) scale(1.05);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18), var(--glow);
-}
-
-.scroll-indicator:active {
-  transform: translateX(-50%) scale(0.95);
-}
-
-.scroll-indicator i {
-  width: 16px;
-  height: 16px;
-  color: var(--primary);
-  display: flex;
-  align-items: center;
-}
-
-.scroll-indicator.hidden {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-@keyframes indicatorBounce {
-  0%, 100% {
-    transform: translate(-50%, 0);
+/* Mobile View Optimizations for Peeking the Tasks Section */
+@media (max-width: 1023px) {
+  #app {
+    padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom, 0px));
   }
-  50% {
-    transform: translate(-50%, -6px);
-  }
-}
 
-@media (min-width: 1024px) {
-  .scroll-indicator {
-    display: none !important;
+  .app-layout {
+    gap: 1.25rem;
+  }
+
+  .timer-section {
+    gap: 1.25rem;
+    padding-top: 0.5rem;
+    max-width: 380px;
+  }
+
+  .brand-logo {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 0.25rem;
+  }
+
+  .brand-title {
+    font-weight: 600;
+    font-size: 1.8rem;
+    letter-spacing: -0.5px;
+  }
+
+  .brand-subtitle {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+  }
+
+  .timer-container {
+    width: clamp(180px, 24vh, 230px);
+    height: clamp(180px, 24vh, 230px);
+  }
+
+  .timer-time,
+  .timer-time-input {
+    font-size: clamp(2.4rem, 8vh, 3.4rem);
+  }
+
+  .timer-hint {
+    font-size: 0.7rem;
+    margin-top: -0.25rem;
+  }
+
+  .timer-sessions {
+    font-size: 0.65rem;
+    margin-top: 0.1rem;
+  }
+
+  .btn-round {
+    width: 54px;
+    height: 54px;
+  }
+
+  .glass-btn i {
+    width: 22px;
+    height: 22px;
+  }
+
+  .control-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.5px;
+  }
+
+  .floating-glass {
+    padding: 0.65rem 1.25rem;
+    max-width: 300px;
+    border-radius: 0.85rem;
+  }
+
+  .task-label {
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+  }
+
+  .task-input {
+    font-size: 0.95rem;
+  }
+
+  .task-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .mode-tabs {
+    padding: 0.3rem;
+    border-radius: 1.25rem;
+  }
+
+  .mode-btn {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.75rem;
+    border-radius: 1rem;
+  }
+
+  .todo-section {
+    margin-top: 0.5rem;
+    padding-top: 1.5rem;
+    gap: 1rem;
+    border-top: 1px dashed hsla(var(--h), var(--s), var(--l), 0.2);
   }
 }
