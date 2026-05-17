@@ -41,7 +41,6 @@ const todoManager = new TodoManager();
 let isSoundEnabled = true;
 let isNotificationEnabled = 'Notification' in window && Notification.permission === 'granted';
 let draggedId: string | null = null;
-let toggledId: string | null = null;
 
 function updateNotificationButton() {
   if (!notificationToggle) return;
@@ -215,9 +214,6 @@ function renderTodos() {
   todos.forEach(todo => {
     const li = document.createElement('li');
     li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
-    if (todo.id === toggledId) {
-      li.classList.add('appearing');
-    }
     li.setAttribute('draggable', 'true');
     li.setAttribute('data-id', todo.id);
     
@@ -269,21 +265,8 @@ function renderTodos() {
     btn.addEventListener('click', (e) => {
       const id = (e.currentTarget as HTMLElement).getAttribute('data-id');
       if (id) {
-        toggledId = id;
-        
-        const todoItem = btn.closest('.todo-item');
-        if (todoItem) {
-          todoItem.classList.add('collapsing');
-        }
-        
-        setTimeout(() => {
-          todoManager.toggleTodo(id);
-          renderTodos();
-          
-          setTimeout(() => {
-            toggledId = null;
-          }, 500);
-        }, 300);
+        todoManager.toggleTodo(id);
+        renderTodos();
       }
     });
   });
