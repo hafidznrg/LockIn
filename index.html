@@ -14,7 +14,9 @@
   <body>
     <div class="bg-overlay"></div>
     <div id="app">
-      <header class="header">
+      <div class="app-layout">
+        <main class="timer-section">
+          <header class="header">
         <img src="/logo.svg" alt="LockIn Logo" class="brand-logo" />
         <h1 class="brand-title">LockIn</h1>
         <p class="brand-subtitle" id="timerMode">Focus Session</p>
@@ -88,6 +90,23 @@
         <button class="mode-btn active" data-mode="work">Focus</button>
         <button class="mode-btn" data-mode="shortBreak">Short</button>
         <button class="mode-btn" data-mode="longBreak">Long</button>
+      </div>
+        </main>
+
+        <aside class="todo-section">
+          <div class="todo-header">
+            <h2>Tasks</h2>
+            <span id="todoCount" class="todo-count">0/0</span>
+          </div>
+          <div class="todo-input-wrapper">
+            <input type="text" id="newTodoInput" class="todo-input" placeholder="Add a new task..." maxlength="100">
+            <button id="addTodoBtn" class="todo-add-btn" title="Add Task">
+              <i data-lucide="plus"></i>
+            </button>
+          </div>
+          <ul id="todoList" class="todo-list">
+          </ul>
+        </aside>
       </div>
 
       

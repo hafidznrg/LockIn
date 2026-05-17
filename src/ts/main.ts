@@ -2,6 +2,7 @@ import '../styles/main.css';
 import { Timer } from './timer';
 import type { TimerMode } from './timer';
 import { TaskManager } from './taskManager';
+import { TodoManager } from './todoManager';
 
 // Elements
 const timerTime = document.getElementById('timerTime') as HTMLDivElement;
@@ -19,6 +20,12 @@ const soundToggle = document.getElementById('soundToggle') as HTMLButtonElement;
 const notificationToggle = document.getElementById('notificationToggle') as HTMLButtonElement;
 const modeButtons = document.querySelectorAll('.mode-btn');
 
+// Todo Elements
+const newTodoInput = document.getElementById('newTodoInput') as HTMLInputElement;
+const addTodoBtn = document.getElementById('addTodoBtn') as HTMLButtonElement;
+const todoList = document.getElementById('todoList') as HTMLUListElement;
+const todoCount = document.getElementById('todoCount') as HTMLSpanElement;
+
 // Modal Elements
 const customModal = document.getElementById('customModal') as HTMLDivElement;
 const modalTitle = document.getElementById('modalTitle') as HTMLHeadingElement;
@@ -30,6 +37,7 @@ const modalClose = document.getElementById('modalClose') as HTMLButtonElement;
 // State
 const timer = new Timer();
 const taskManager = new TaskManager();
+const todoManager = new TodoManager();
 let isSoundEnabled = true;
 let isNotificationEnabled = 'Notification' in window && Notification.permission === 'granted';
 
@@ -167,6 +175,97 @@ function init() {
 
   // Preload chime audio
   chime.load();
+  
+  // Render Todos
+  renderTodos();
+}
+
+function escapeHtml(unsafe: string) {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function updateTodoCount() {
+  const todos = todoManager.getTodos();
+  const completedCount = todos.filter(t => t.completed).length;
+  if (todoCount) {
+    todoCount.textContent = `${completedCount}/${todos.length}`;
+  }
+}
+
+function renderTodos() {
+  if (!todoList) return;
+  
+  const todos = todoManager.getTodos();
+  todoList.innerHTML = '';
+  
+  updateTodoCount();
+  
+  if (todos.length === 0) {
+    todoList.innerHTML = '<li class="todo-empty">No tasks yet. Add one to start locking in!</li>';
+    return;
+  }
+  
+  todos.forEach(todo => {
+    const li = document.createElement('li');
+    li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+    
+    li.innerHTML = `
+      <div class="todo-checkbox" data-id="${todo.id}">
+        <i data-lucide="check"></i>
+      </div>
+      <span class="todo-text">${escapeHtml(todo.text)}</span>
+      <button class="todo-delete-btn" data-id="${todo.id}" title="Delete Task">
+        <i data-lucide="trash-2"></i>
+      </button>
+    `;
+    
+    todoList.appendChild(li);
+  });
+  
+  // Re-initialize icons
+  (window as any).lucide?.createIcons();
+  
+  // Attach event listeners
+  document.querySelectorAll('.todo-checkbox').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = (e.currentTarget as HTMLElement).getAttribute('data-id');
+      if (id) {
+        todoManager.toggleTodo(id);
+        
+        // Dynamically toggle completed state on this item only
+        const todoItem = btn.closest('.todo-item');
+        if (todoItem) {
+          todoItem.classList.toggle('completed');
+        }
+        
+        updateTodoCount();
+      }
+    });
+  });
+  
+  document.querySelectorAll('.todo-delete-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = (e.currentTarget as HTMLElement).getAttribute('data-id');
+      if (id) {
+        todoManager.deleteTodo(id);
+        renderTodos();
+      }
+    });
+  });
+}
+
+function handleAddTodo() {
+  const text = newTodoInput.value.trim();
+  if (text) {
+    todoManager.addTodo(text);
+    newTodoInput.value = '';
+    renderTodos();
+  }
 }
 
 // UI Updates
@@ -408,6 +507,18 @@ timerTimeInput.addEventListener('blur', () => {
 taskInput.addEventListener('input', () => {
   taskManager.setTask(taskInput.value);
 });
+
+if (addTodoBtn) {
+  addTodoBtn.addEventListener('click', handleAddTodo);
+}
+
+if (newTodoInput) {
+  newTodoInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      handleAddTodo();
+    }
+  });
+}
 
 soundToggle.addEventListener('click', () => {
   initAudioContext();
