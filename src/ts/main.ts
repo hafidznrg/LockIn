@@ -41,6 +41,7 @@ const todoManager = new TodoManager();
 let isSoundEnabled = true;
 let isNotificationEnabled = 'Notification' in window && Notification.permission === 'granted';
 let draggedId: string | null = null;
+let toggledId: string | null = null;
 
 function updateNotificationButton() {
   if (!notificationToggle) return;
@@ -214,6 +215,9 @@ function renderTodos() {
   todos.forEach(todo => {
     const li = document.createElement('li');
     li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+    if (todo.id === toggledId) {
+      li.classList.add('appearing');
+    }
     li.setAttribute('draggable', 'true');
     li.setAttribute('data-id', todo.id);
     
@@ -224,7 +228,7 @@ function renderTodos() {
       <div class="todo-checkbox" data-id="${todo.id}">
         <i data-lucide="check"></i>
       </div>
-      <span class="todo-text">${escapeHtml(todo.text)}</span>
+      <span class="todo-text"><span class="todo-text-inner">${escapeHtml(todo.text)}</span></span>
       <button class="todo-delete-btn" data-id="${todo.id}" title="Delete Task">
         <i data-lucide="trash-2"></i>
       </button>
@@ -265,8 +269,21 @@ function renderTodos() {
     btn.addEventListener('click', (e) => {
       const id = (e.currentTarget as HTMLElement).getAttribute('data-id');
       if (id) {
-        todoManager.toggleTodo(id);
-        renderTodos();
+        toggledId = id;
+        
+        const todoItem = btn.closest('.todo-item');
+        if (todoItem) {
+          todoItem.classList.add('collapsing');
+        }
+        
+        setTimeout(() => {
+          todoManager.toggleTodo(id);
+          renderTodos();
+          
+          setTimeout(() => {
+            toggledId = null;
+          }, 500);
+        }, 300);
       }
     });
   });
