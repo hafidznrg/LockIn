@@ -82,22 +82,6 @@ export class TodoManager {
       }
     }
 
-    // Determine new completion state based on the dragged item's new visual neighbors
-    const draggedIndex = newTodos.findIndex(t => t.id === draggedId);
-    if (draggedIndex !== -1) {
-      const prevTodo = draggedIndex > 0 ? newTodos[draggedIndex - 1] : null;
-      const nextTodo = draggedIndex < newTodos.length - 1 ? newTodos[draggedIndex + 1] : null;
-
-      // If dropped after a completed task, it becomes completed
-      if (prevTodo && prevTodo.completed) {
-        draggedTodo.completed = true;
-      }
-      // If dropped before an active task, it becomes active
-      else if (nextTodo && !nextTodo.completed) {
-        draggedTodo.completed = false;
-      }
-    }
-
     // Update the official list
     this.todos = newTodos;
     
