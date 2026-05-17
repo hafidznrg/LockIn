@@ -40,6 +40,7 @@ const taskManager = new TaskManager();
 const todoManager = new TodoManager();
 let isSoundEnabled = true;
 let isNotificationEnabled = 'Notification' in window && Notification.permission === 'granted';
+let draggedId: string | null = null;
 
 function updateNotificationButton() {
   if (!notificationToggle) return;
@@ -213,8 +214,13 @@ function renderTodos() {
   todos.forEach(todo => {
     const li = document.createElement('li');
     li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+    li.setAttribute('draggable', 'true');
+    li.setAttribute('data-id', todo.id);
     
     li.innerHTML = `
+      <div class="todo-drag-handle" title="Drag to reorder">
+        <i data-lucide="grip-vertical"></i>
+      </div>
       <div class="todo-checkbox" data-id="${todo.id}">
         <i data-lucide="check"></i>
       </div>
@@ -223,6 +229,30 @@ function renderTodos() {
         <i data-lucide="trash-2"></i>
       </button>
     `;
+    
+    // Drag and Drop events
+    li.addEventListener('dragstart', (e) => {
+      draggedId = todo.id;
+      li.classList.add('dragging');
+      if (e.dataTransfer) {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', todo.id);
+      }
+    });
+
+    li.addEventListener('dragend', () => {
+      li.classList.remove('dragging');
+      
+      if (draggedId) {
+        const orderedIds = Array.from(todoList.querySelectorAll('.todo-item'))
+          .map(item => item.getAttribute('data-id'))
+          .filter(Boolean) as string[];
+          
+        todoManager.reorderTodos(orderedIds, draggedId);
+        draggedId = null;
+        renderTodos();
+      }
+    });
     
     todoList.appendChild(li);
   });
@@ -236,14 +266,7 @@ function renderTodos() {
       const id = (e.currentTarget as HTMLElement).getAttribute('data-id');
       if (id) {
         todoManager.toggleTodo(id);
-        
-        // Dynamically toggle completed state on this item only
-        const todoItem = btn.closest('.todo-item');
-        if (todoItem) {
-          todoItem.classList.toggle('completed');
-        }
-        
-        updateTodoCount();
+        renderTodos();
       }
     });
   });
@@ -581,5 +604,33 @@ modeButtons.forEach(btn => {
     switchMode(mode);
   });
 });
+
+function getDragAfterElement(container: HTMLUListElement, y: number): HTMLElement | null {
+  const draggableElements = Array.from(container.querySelectorAll('.todo-item:not(.dragging)'));
+  
+  return draggableElements.reduce<{ offset: number; element: HTMLElement | null }>((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) {
+      return { offset: offset, element: child as HTMLElement };
+    } else {
+      return closest;
+    }
+  }, { offset: Number.NEGATIVE_INFINITY, element: null }).element;
+}
+
+if (todoList) {
+  todoList.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    const dragging = document.querySelector('.todo-item.dragging');
+    if (!dragging) return;
+    const afterElement = getDragAfterElement(todoList, e.clientY);
+    if (afterElement) {
+      todoList.insertBefore(dragging, afterElement);
+    } else {
+      todoList.appendChild(dragging);
+    }
+  });
+}
 
 init();
