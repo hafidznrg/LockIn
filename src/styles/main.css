@@ -45,11 +45,13 @@ body {
   font-family: 'Outfit', sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   transition: var(--transition);
 }
 
@@ -86,6 +88,7 @@ body {
   align-items: center;
   position: relative;
   z-index: 1;
+  margin: auto;
 }
 
 .app-layout {
