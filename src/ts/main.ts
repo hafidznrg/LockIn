@@ -622,13 +622,38 @@ function getDragAfterElement(container: HTMLUListElement, y: number): HTMLElemen
 if (todoList) {
   todoList.addEventListener('dragover', (e) => {
     e.preventDefault();
-    const dragging = document.querySelector('.todo-item.dragging');
+    const dragging = document.querySelector('.todo-item.dragging') as HTMLElement;
     if (!dragging) return;
+    
     const afterElement = getDragAfterElement(todoList, e.clientY);
     if (afterElement) {
-      todoList.insertBefore(dragging, afterElement);
+      if (dragging.nextElementSibling !== afterElement) {
+        todoList.insertBefore(dragging, afterElement);
+      }
     } else {
-      todoList.appendChild(dragging);
+      if (todoList.lastElementChild !== dragging) {
+        todoList.appendChild(dragging);
+      }
+    }
+  });
+}
+
+// Scroll Indicator for Mobile
+const mobileScrollIndicator = document.getElementById('mobileScrollIndicator') as HTMLDivElement;
+const todoSection = document.querySelector('.todo-section') as HTMLElement;
+
+if (mobileScrollIndicator && todoSection) {
+  // Smooth scroll to tasks on click
+  mobileScrollIndicator.addEventListener('click', () => {
+    todoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // Fade out indicator when user starts scrolling down
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 40) {
+      mobileScrollIndicator.classList.add('hidden');
+    } else {
+      mobileScrollIndicator.classList.remove('hidden');
     }
   });
 }

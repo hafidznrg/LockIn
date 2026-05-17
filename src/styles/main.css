@@ -599,6 +599,12 @@ body {
   animation: todoItemFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Disable transitions and animations when any item is being dragged to prevent layout-shift feedback loops and shaking */
+.todo-list:has(.dragging) .todo-item {
+  transition: none !important;
+  animation: none !important;
+}
+
 .todo-item:last-child {
   border-bottom: none;
 }
@@ -1032,5 +1038,73 @@ body.break-long .modal-content {
 
   .timer-time {
     font-size: clamp(2.5rem, 8vh, 3.5rem);
+  }
+}
+
+/* Scroll Indicator for Mobile */
+.scroll-indicator {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: hsla(var(--h), var(--s), var(--l), 0.22);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  padding: 0.55rem 1.1rem;
+  border-radius: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), var(--glow);
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              visibility 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+              transform 0.3s ease, 
+              background-color var(--transition),
+              box-shadow var(--transition);
+  animation: indicatorBounce 2s infinite ease-in-out;
+}
+
+.scroll-indicator:hover {
+  background: hsla(var(--h), var(--s), var(--l), 0.35);
+  transform: translateX(-50%) scale(1.05);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18), var(--glow);
+}
+
+.scroll-indicator:active {
+  transform: translateX(-50%) scale(0.95);
+}
+
+.scroll-indicator i {
+  width: 16px;
+  height: 16px;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+}
+
+.scroll-indicator.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@keyframes indicatorBounce {
+  0%, 100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, -6px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .scroll-indicator {
+    display: none !important;
   }
 }
